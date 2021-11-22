@@ -24,14 +24,27 @@ class ActualizarEmpresaFeria extends FormRequest
     public function rules()
     {
         return [
-            'razon_social'  => 'string|max:200',
-            'descripcion'   => 'nullable|string|max:200',
-            'url_stream'    => 'nullable|string|max:200',
-            'logo'          => 'file|max:2048',
-            'instagram'     => 'nullable|string|max:200',
-            'facebook'      => 'nullable|string|max:200',
-            'youtube'       => 'nullable|string|max:200',
-            'categoria'     => 'string|max:100'
+            'razon_social' => 'required|string|max:200',
+            'descripcion' => 'nullable|string|max:200',
+            'url_stream' => 'nullable|string|max:200',
+            'logo' => 'image|max:900',
+            'instagram' => 'nullable|string|max:200',
+            'facebook' => 'nullable|string|max:200',
+            'youtube' => 'nullable|string|max:200',
+            'categoria' => 'required|string|max:100'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'max' => 'No puede ser mayor a :max carácteres',
+            'unique' => 'Empresa ya existe',
+            'image' => 'Archivo debe ser una imagen',
+            'logo.max' => 'Imagen no puede exceder :maxKB',
+            'razon_social.required' => 'Ingrese un nombre para la empresa',
+            'logo.required' => 'Seleccione una imagen',
+            'categoria.required' => 'Seleccione una categoría'
         ];
     }
 }
