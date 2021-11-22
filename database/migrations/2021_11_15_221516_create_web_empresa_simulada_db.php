@@ -34,14 +34,6 @@ class CreateWebEmpresaSimuladaDb extends Migration
             $table->string('categorias', 100);
             $table->boolean('esta_habilitado')->default(true);
         });
-
-        Schema::create('empresas', function (Blueprint $table){
-            $table->id();
-            $table->timestamps();
-            $table->string('razon_social', 200)->unique();
-            $table->string('url_logo', 200);
-            $table->string('url_web', 200);
-        });
     }
 
     /**
@@ -53,6 +45,5 @@ class CreateWebEmpresaSimuladaDb extends Migration
     {
         Schema::dropIfExists('empresas_feria');
         Schema::dropIfExists('eventos');
-        Schema::dropIfExists('empresas');
     }
 }
