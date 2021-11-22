@@ -51,4 +51,10 @@ class EventoController extends APIController
         }
         return $this->respondNoContent();
     }
+
+    public function esVisibleFeria()
+    {
+        $estadoFeria = $this->evento->feria()->esta_habilitado;
+        return $this->respond($estadoFeria);
+    }
 }
