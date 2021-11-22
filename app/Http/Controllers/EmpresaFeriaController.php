@@ -6,10 +6,8 @@ use App\Http\Requests\ActualizarEmpresaFeria;
 use App\Http\Requests\CrearEmpresaFeria;
 use App\Models\EmpresaFeria;
 use App\Services\FileService;
-use Exception;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class EmpresaFeriaController extends APIController
@@ -32,15 +30,14 @@ class EmpresaFeriaController extends APIController
     {
         try {
             $file = $request->file('logo');
-            $fileExt = $file->getClientOriginalExtension();
-            $path = $file->storeAs('feria', uniqid('logo_').'.'.$fileExt, 'images');
+            $path = $this->fileService->guardarLogoEmpresaFeria($file);
             $this->empresa->url_logo = $path;
             $this->empresa->fill($request->validated());
             $this->empresa->save();
         } catch (QueryException $e) {
-            return $this->respondError($e->getMessage());
-        } catch (Exception $e) {
-            return $this->respondError($e->getMessage());
+            return $this->respondError($e->errorInfo);
+        } catch (\Throwable $th) {
+            return $this->respondError($th->getMessage());
         }
         return $this->respondCreated($this->empresa);
     }
@@ -52,28 +49,32 @@ class EmpresaFeriaController extends APIController
 
     public function actualizar(ActualizarEmpresaFeria $request, EmpresaFeria $empresa)
     {
-        if ($request->hasFile('logo')) {
-            $file = $request->file('logo');
-            $fileExt = $file->getClientOriginalExtension();
-            $nuevoLogo = $file->storeAs('feria', uniqid('logo_').'.'.$fileExt, 'images');
-            $antiguoLogo = $empresa->server_path_logo;
-            $empresa->url_logo = $nuevoLogo;
-        }
         try {
-            $empresa->fill($request->validated());
-            if ($empresa->isDirty()) {
-                $empresa->save();
+            if ($request->hasFile('logo')) {
+                $file = $request->file('logo');
+                $nuevoLogo = $this->fileService->guardarLogoEmpresaFeria($file);
+                $antiguoLogo = $empresa->server_path_logo;
+                $empresa->url_logo = $nuevoLogo;
             }
+            $empresa->fill($request->validated());
+            $empresa->save();
             if (isset($nuevoLogo) && Storage::disk('images')->exists($antiguoLogo)) {
-                Storage::disk('images')->delete($antiguoLogo);
+                $this->fileService->eliminarLogoEmpresaFeria($antiguoLogo);
             }
         } catch (QueryException $e) {
             if (isset($nuevoLogo)) {
-                Storage::disk('images')->delete($nuevoLogo);
+                $this->fileService->eliminarLogoEmpresaFeria($nuevoLogo);
+            }
+            if ($e->errorInfo[1] === 1062) {
+                $mensaje = 'Empresa ya existe';
+                $errores = ['razon_social' => [$mensaje]];
+                return $this->respondError($errores, 422);
             }
             return $this->respondError($e->getMessage());
-        } catch (Exception $e) {
+        } catch (FileNotFoundException $e) {
             return $this->respondError($e->getMessage());
+        } catch (\Throwable $th) {
+            return $this->respondError($th->getMessage());
         }
         return $this->respondNoContent();
     }
@@ -82,12 +83,15 @@ class EmpresaFeriaController extends APIController
     {
         try {
             $empresa->delete();
-            $this->fileService->eliminarArchivo($empresa->server_path_logo, 'images');
+            $this->fileService->eliminarLogoEmpresaFeria($empresa->server_path_logo);
         } catch (QueryException $e) {
             return $this->respondError($e->getMessage());
         } catch (FileNotFoundException $e) {
             return $this->respondError($e->getMessage());
+        } catch (\Throwable $th) {
+            return $this->respondError($th->getMessage());
         }
+        return $this->respondSuccess();
     }
 
     public function totalEmpresas()
