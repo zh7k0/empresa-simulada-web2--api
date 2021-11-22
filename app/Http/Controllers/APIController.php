@@ -27,6 +27,12 @@ class APIController extends Controller
 
     public function respondError($message, $statusCode = 500)
     {
+        if (is_array($message)) {
+            return response()->json([
+                'errors' => $message,
+                'status_code' => $statusCode
+            ], $statusCode);
+        }
         return response()->json([
             'error' => $message,
             'status_code' => $statusCode
