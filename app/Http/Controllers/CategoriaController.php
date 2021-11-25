@@ -57,7 +57,7 @@ class CategoriaController extends APIController
     {
         $categoria->loadCount('empresas');
         if ($categoria->empresas_count > 0) {
-            $mensaje = 'No se puede eliminar categoría porque tiene empresas asociadas';
+            $mensaje = 'No puede eliminar categoría. Tiene empresas asociadas';
             return $this->respondError($mensaje, 422);
         }
         try {
