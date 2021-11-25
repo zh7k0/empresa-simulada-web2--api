@@ -21,7 +21,7 @@ class Empresa extends Model
     {
         $urlLogo = $this->attributes['url_logo'];
         $fullUrl = Storage::disk('images')->url($urlLogo);
-        return $urlLogo;
+        return $fullUrl;
     }
 
     public function getServerPathLogoAttribute()
