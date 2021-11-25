@@ -6,7 +6,6 @@ use App\Http\Requests\ActualizarEmpresa;
 use App\Http\Requests\CrearEmpresa;
 use App\Models\Empresa;
 use App\Services\FileService;
-use Facade\Ignition\QueryRecorder\Query;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -24,7 +23,7 @@ class EmpresaController extends APIController
 
     public function obtenerEmpresas()
     {
-        $empresas = $this->empresa->all();
+        $empresas = $this->empresa->with('categoria')->get();
         return $this->respond($empresas);
     }
 
@@ -43,7 +42,7 @@ class EmpresaController extends APIController
         } catch (\Throwable $th) {
             return $this->respondError($th->getMessage());
         }
-        return $this->respondCreated($this->empresa);
+        return $this->respondCreated($this->empresa->load('categoria'));
     }
 
     public function mostrar(Empresa $empresa)
@@ -62,7 +61,9 @@ class EmpresaController extends APIController
             }
             $empresa->fill($request->validated());
             $empresa->save();
-            $this->fileService->eliminarLogoEmpresaWebshop($rutaAntiguoLogo);
+            if (isset($rutaAntiguoLogo)) {
+                $this->fileService->eliminarLogoEmpresaWebshop($rutaAntiguoLogo);
+            }
         } catch (QueryException $e) {
             if (isset($rutaNuevoLogo)) {
                 $this->fileService->eliminarLogoEmpresaWebshop($rutaNuevoLogo);
@@ -74,7 +75,7 @@ class EmpresaController extends APIController
             }
             return $this->respondError($e->errorInfo);
         } catch (FileNotFoundException $e) {
-            return $this->respondError($e->getMessage());
+            return $this->respond($e->getMessage());
         } catch (\Throwable $th) {
             return $this->respondError($th->getMessage());
         }
