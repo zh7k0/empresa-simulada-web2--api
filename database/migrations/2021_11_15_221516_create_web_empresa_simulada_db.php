@@ -33,6 +33,7 @@ class CreateWebEmpresaSimuladaDb extends Migration
             $table->dateTime('fecha_realizacion');
             $table->string('categorias', 100);
             $table->boolean('esta_habilitado')->default(true);
+            $table->string('link_evento', 200);
         });
     }
 
