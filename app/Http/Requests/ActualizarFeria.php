@@ -25,10 +25,11 @@ class ActualizarFeria extends FormRequest
     {
         return [
             'categorias' => 'required|array',
-            'categorias.*' => 'string|distinct:ignore_case',
+            'categorias.*' => 'required|string|distinct:ignore_case',
             'tipo_evento' => 'string|max:50',
             'fecha_realizacion' => 'required|date',
-            'esta_habilitado' => 'boolean'
+            'esta_habilitado' => 'boolean',
+            'link_evento' => 'required|string|max:200'
         ];
     }
 
@@ -37,8 +38,11 @@ class ActualizarFeria extends FormRequest
         return [
             'categorias.required' => 'Debe ingresar al menos una categoría',
             'categorias.*.distinct' => 'Una de las categorías está duplicada',
+            'categorias.*.required' => 'No puede dejar categorías vacías',
             'fecha_realizacion.required' => 'Ingrese una fecha',
-            'date' => 'Fecha no posee formato válido'
+            'date' => 'Fecha no posee formato válido',
+            'max' => 'Límite de carácteres excedido. Máximo: :max',
+            'link_evento.required' => 'Ingrese un enlace'
         ];
     }
 }

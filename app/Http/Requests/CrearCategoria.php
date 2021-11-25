@@ -13,7 +13,7 @@ class CrearCategoria extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,15 @@ class CrearCategoria extends FormRequest
     public function rules()
     {
         return [
-            //
+            'nombre' => 'bail|required|string|max:100|unique:App\Models\Categoria,nombre'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'max' => 'Categoría no debe exceder 100 carácteres',
+            'unique' => 'Categoría ya existe'
         ];
     }
 }
