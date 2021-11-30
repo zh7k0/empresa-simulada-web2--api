@@ -3,6 +3,7 @@
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\EmpresaController;
 use App\Http\Controllers\EmpresaFeriaController;
+use App\Http\Controllers\EnlaceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventoController;
@@ -35,6 +36,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/empresas/{empresa}', [EmpresaController::class, 'mostrar']);
     Route::put('/empresas/{empresa}', [EmpresaController::class, 'actualizar']);
     Route::delete('/empresas/{empresa}', [EmpresaController::class, 'eliminar']);
+
+    Route::get('/enlaces', [EnlaceController::class, 'obtenerEnlaces']);
+    Route::post('/enlaces', [EnlaceController::class, 'crear']);
+    Route::get('/enlaces/{enlace}', [EnlaceController::class, 'mostrar']);
+    Route::put('/enlaces/{enlace}', [EnlaceController::class, 'actualizar']);
+    Route::delete('/enlaces/{enlace}', [EnlaceController::class, 'eliminar']);
 });
 
 Route::get('/feria', [EventoController::class, 'obtenerFeria']);
@@ -43,7 +50,5 @@ Route::get('/feria/empresas', [EmpresaFeriaController::class, 'listarEmpresas'])
 Route::get('/feria/empresas/{empresa}', [EmpresaFeriaController::class, 'mostrar']);
 
 Route::get('/feria/visibilidad', [EventoController::class, 'esVisibleFeria']);
-
-
 
 Route::get('/empresas', [EmpresaController::class, 'obtenerEmpresas']);
