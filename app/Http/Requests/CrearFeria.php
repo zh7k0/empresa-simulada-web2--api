@@ -38,6 +38,7 @@ class CrearFeria extends FormRequest
         return [
             'categorias.required' => 'Debe ingresar al menos una categoría',
             'categorias.*.distinct' => 'Una de las categorías está duplicada',
+            'categorias.*.required' => 'No puede dejar categorías vacías',
             'fecha_realizacion.required' => 'Ingrese una fecha',
             'date' => 'Fecha no posee formato válido',
             'max' => 'Límite de carácteres excedido. Máximo: :max',
