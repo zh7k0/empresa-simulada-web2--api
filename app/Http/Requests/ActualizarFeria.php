@@ -29,7 +29,7 @@ class ActualizarFeria extends FormRequest
             'tipo_evento' => 'string|max:50',
             'fecha_realizacion' => 'required|date',
             'esta_habilitado' => 'boolean',
-            'link_evento' => 'required|string|max:200'
+            'link_evento' => 'required|string|max:200|starts_with:https://,http://'
         ];
     }
 
@@ -42,7 +42,8 @@ class ActualizarFeria extends FormRequest
             'fecha_realizacion.required' => 'Ingrese una fecha',
             'date' => 'Fecha no posee formato válido',
             'max' => 'Límite de carácteres excedido. Máximo: :max',
-            'link_evento.required' => 'Ingrese un enlace'
+            'link_evento.required' => 'Ingrese un enlace',
+            'starts_with' => 'Formato de enlace inválido'
         ];
     }
 }
